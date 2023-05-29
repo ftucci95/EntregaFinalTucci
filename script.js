@@ -1,80 +1,152 @@
-// esto en C se conoce como #define, dado que JS no tiene esto uso valores const para hacer el código más legible
-const INVALID = 0;
-const VALID = 1;
-
-/* la estructura que voy a analizar del array de JSON contiene los siguientes datos sobre el estado de escaleras/ascensores de las estaciones del subterráneo de buenos aires:
+/* Mi proyecto consiste en un código que decodifica un JSON y muestra la información en unas tablas.
+* la estructura que voy a analizar del array de JSON contiene los siguientes datos sobre el estado de escaleras/ascensores de las estaciones del subterráneo de buenos aires:
 * LÍNEA: Línea A, Línea B...
 * ESTACIÓN: San Pedrito, Flores, Carabobo...
 * MEDIO DE ELEVACIÓN: Escalera 1, Ascensor 2...
 * ESTADO: OK, FALLA, NO SUPERVISADO
 */ 
 
-//Estas estructuras se llamarán elementos, y armando arrays de estos elementos en serie estaremos "suponiendo" que tenemos un JSON parseado en un array de strings.
+// esto en C se conoce como #define, dado que JS no tiene esto uso valores const para hacer el código más legible
+const INVALID = 0;
+const VALID = 1;
+// Este es el array que valida los estados de los medios de elevación:
+const arrayEstados = ["OK","FALLA","NO SUPERVISADO"];
+// cuántas veces voy a intentar parsear el mismo json antes de descartarlo por erróneo?
+const MaxJsonTries = 3;
+// un par de const para legibilidad 
+const YES = 1;
+const NO = 0;
+const ERROR = -1;
+const OK = 1;
+const INCOMPLETE = 0;
+const ESCALERA=0;
+const ASCENSOR=1;
+// como voy a cargar una lista pre-armada desde un archivo obvio que indicaré el path
+const STATUS_FILE_PATH = "./list.txt";
+// Una variable global? claro, estas sí o sí se declaran con VAR (aunque suele beneficiar a river y perjudicar a boquita)
+// y sí, será una lista de objetos.
+var todosLosMedios = [];
+
+//Estas estructuras estarán representadas por objetos, y armando arrays de estos objetos en serie estaremos tenemos el estado de todos los medios de elevación (escaleros/ascensores).
+// Definición de clases:
+class MedioDeElevación{
+  // La clase medio de elevación contiene la información por ejemplo de una escalera mecánica cualquiera, dónde está situada, cómo se llama y su estado actual.
+  constructor(linea,estacion,escalera,nombre,estado)
+  {
+    this.linea=str(linea);
+    this.estacion=str(estacion);
+    this.escalera=str(escalera); //0 para escaleras, 1 para ascensores
+    this.nombre=str(nombre);
+    this.estado=str(estado);
+  }
+
+  // función para actualizar el estado del medio de elevación, luego de leer el JSON
+  actualizarEstado(new_estado)
+  {
+    this.estado = new_estado;
+  }
+
+  //funcion que devuelve una concatenación de linea, estación, escalera o ascensor(0 o 1), y el nombre
+  quienSoy()
+  {
+    let aux_string = str(this.linea)+str(this.estacion)+str(this.escalera)+str(this.nombre)
+    return aux_string;
+  }
+
+  //función para comparar el nombre propio con una cadena externa... útil
+  acasoSoy(supposedName)
+  {
+    if (str(supposedName) === this.quienSoy())
+    {
+      return YES;
+    }
+    return NO;
+  }
+}
 
 //Ejemplo de elementos a analizar: tienen 4 componentes
-const validElement1 = ["Línea A","San Pedrito","Ascensor 2","OK",];
-const validElement2 = ["Línea A","Carabobo","Escalera 1"," OK",];
+const validElement1 = new MedioDeElevación("Línea A","San Pedrito",ASCENSOR,"2","OK");
+const validElement2 = new MedioDeElevación("Línea A","Carabobo",ESCALERA,"1","OK");
 
 //El siguiente tiene un elemento que no existe: ascensor 4
-const invalidElement1 =["Línea A","San Pedrito","Ascensor 4","FALLA",];
+const invalidElement1 =new MedioDeElevación("Línea A","San Pedrito",ASCENSOR,"4","FALLA");
 //el siguiente tiene un elemento que no existe: Juan Manuel de Rosas
-const invalidElement2 =["Línea B","Juan Manuel de Rosas","Ascensor 1","FALLA",];
+const invalidElement2 =new MedioDeElevación("Línea B","Juan Manuel de Rosas",ASCENSOR, "1","FALLA");
 //El siguiente tiene un elemento que no existe: FALLA INTERMITENTE
-const invalidElement3 =["Línea A","San Pedrito","Ascensor 1","FALLA INTERMITENTE",];
+const invalidElement3 =new MedioDeElevación("Línea A","San Pedrito",ASCENSOR,"1","FALLA INTERMITENTE");
 //el siguiente tiene un elemento que no existe: Línea F 
-const invalidElement4 =["Línea F","San Pedrito","Ascensor 1","FALLA",];
+const invalidElement4 =new MedioDeElevación("Línea F","San Pedrito",ASCENSOR,"1","FALLA");
 //como decía anteriormente: los elementos están uno atrás de otro en un array, pues hay que recibir y validar ~415 escaleras/ascensores de todas las estaciones de todas las líneas.
 
-//Ejemplo de array válido: tiene 4 tuplas (elementos multicomponente)
-const validArray = validElement1.concat(validElement2,validElement1,validElement2);
+//Ejemplo de array válido:
+const validArray = validElement1.push(validElement2,validElement1,validElement2);
 
 //ejemplos de arrays inválidos: distintas posiciones para el elemento que no es válido
-const invalidArray1 = invalidElement1.concat(validElement1,validElement2);
-const invalidArray2 = validElement1.concat(validElement2,invalidElement3);
-const invalidArray3 = validElement1.concat(invalidElement4);
-const invalidArray4 = validElement1.concat(validElement2,validElement1,invalidElement4);
+const invalidArray1 = invalidElement1.push(validElement1,validElement2);
+const invalidArray2 = validElement1.push(validElement2,invalidElement3);
+const invalidArray3 = validElement1.push(invalidElement4);
+const invalidArray4 = validElement1.push(validElement2,validElement1,invalidElement4);
 //estas variables se utilizarán como ejemplo para debuggear el código que hay aquí debajo:
 
 //Función que utiliza un ciclo:
 function checkJSONData (JSONArray)
 {
-  // JSONArray es solamente el JSON parseado en un array de strings.
-  var validArray = VALID;
-  // Lo primero que tiene que hacer mi función es chequear de a 4 datos, y tiene que hacerlo para la lista de ~415 elementos, así que acá uso un ciclo
-  // voy a iterar con la variable i, incrementándola de a uno, pero sabiendo que voy a consultar de a 4 elementos juntos, así que itero hasta n/4 (= ~415 )
-  for (let i=0 ; i<(JSONArray.length)/4 ; i++)
+  // JSONArray es solamente el JSON parseado en un array de objetos.
+  let validArray = [];
+  //hago una copia del JSONArray pues utilizaré la función POP, así que ahora uso MAP
+  let auxJSONArray = JSONArray.map((x) => x);
+  // Lo primero que tiene que hacer mi función es chequear la validez de los objetos, y tiene que hacerlo para la lista de ~415 elementos, así que acá uso un ciclo
+  // voy a iterar con la variable i, incrementándola de a uno
+  while(auxJSONArray.length>0)
     {
       // idealmente me gustaría dejar afuera sólo los elementos no-válidos, haciendo que la var validArray sea un array, y preguntando por los válidos
-      // como todavía no vimos arrays en clases, voy a dejarlo así, sabiendo que hay una mejor opción para no perder todo el JSON por un solo elemento inválido.
-      // con el método slice() estoy quedándome sólo con 4 elementos del array total.
-      validArray *= checkJSONArrayElement(JSONArray.slice(4*i,4*i+4));
-      // checkJSONArrayElement devuelve 1 o 0 (valid o invalid) al multiplicar el resultado por el nuevo return, si alguno es invalid(0) el total se vuelve 0.
-      // DEBIDO A ESTA FORMA DE VALIDAR EL ARRAY (multiplicando por la validez de cada elemento) tengo que empezar con la variable en VALID, de todas formas si alguno es inválido todos serán inválidos.
-      // así es como detecto un elemento inválido, sin poder identificarlo (posible mejora) y desechando todo el array
+      validArray.push(checkJSONArrayElement(auxJSONArray[auxJSONArray.length-1]));
+      // como pop saca al último, al válidArray pusheo desde el último elemento de auxJSONArray
+      auxJSONArray.pop()
+      // checkJSONArrayElement devuelve 1 o 0 (valid o invalid)
+      // así es como detecto un elemento inválido, pudiendo identificarlo y desechándolo en la siguiente parte de la función
     }
-  // Si bien ya usé un ciclo, ahora tengo que usar un condicional para preguntar por el resultado del checkeo
-  if (validArray==INVALID)
+  // cuando toda esta secuencia terminó quiero tener para cada objeto una validez asociada... pero ahora el array de validez está invertido, porque pop saca al último elemento...
+  // entonces invierto el array de validez: funciona esta línea? testear
+  validArray=validArray.reverse();
+  //Ahora actualizaré sólo los válidos: armo una lista filtrada
+  filteredJSONArray = [];
+  for (let i=0;i<validArray.length;i++)
+  {
+    // Si bien ya usé un ciclo, ahora tengo que usar un condicional para preguntar por el resultado del checkeo
+    if (validArray[i]==INVALID)
+      {
+        // primero pregunto por los casos de error: no pusheo, no hago nada, no me interesa popear
+      }
+    else
     {
-      // primero pregunto por los casos de error.
-      return INVALID;
+      // este es el caso deseable, meto los válidos en el array  y puedo usarlo en mi programa.
+      filteredJSONArray.push(JSONArray[i]);
     }
-  else return VALID;
-  // este es el caso deseable, a partir de acá salgo de esta función y digo que JSONArray es un array que tiene todos datos válidos, y puedo usarlo en mi programa.
+  }
+  return filteredJSONArray;
 }
 
 //Función que usa un condicional ... aunque ya usé uno recién
 function checkJSONArrayElement (arrayElement)
 {
-  // arrayElement sigue siendo un array!!
-  var validElement = INVALID;
+  // arrayElement ahora es un objeto!!
+  let validElement = INVALID;
   // aclaración: acá estoy llamando "elemento" a un conjunto de 4 elementos
-  validElement = esLinea(arrayElement[0]); // acá también soluciono el tema de darle como primer valor VALID a validElement
-  validElement *= esEstacion(arrayElement[1]);
-  validElement *= esMedio(arrayElement[2]);
-  validElement *= esEstado(arrayElement[3]);
-  // Esta forma de checkear elementos no tiene en cuenta que quizás se estén mezclando estaciones correctas con líneas correctas pero a las que no pertenecen
-  // Por ejemplo este algoritmo da como válido la combinación "línea B" y estación "San Pedrito", lo cual no es correcto.
-  // Hay muchas formas de solucionar este inconveniente, pero para esta entrega no me pareció que haga falta entrar en eso, aunque sí dejarlo asentado (TODO:)
+  let found = NO;
+  let index = 0;
+  while(found!=SI || index>=todosLosMedios.length)
+  {
+    found = todosLosMedios[index].acasoSoy(arrayElement.quienSoy());
+    if (found==SI)
+    {
+      validELement = VALID; //por ahora...
+    }
+    index++;
+  }
+  //y el estado que me están mandando es posible?
+  validElement *= esEstado(arrayElement.estado);
+  // Ahora está completo: los medios de elevación están validados.
   
   if (validElement == INVALID) return INVALID;
   else return VALID;
@@ -83,6 +155,7 @@ function checkJSONArrayElement (arrayElement)
 // A partir de acá estas funciones son solamente para que el código funcione
 
 // Hay 4 funciones que son básicamente buscar un string en un array de strings... sólo cambia la lista en la cual busco así que:
+/* Deprecated:
 function esLinea (text)
 {
   return searchTextInArray(text,arrayLineas);
@@ -97,7 +170,7 @@ function esMedio(text)
 {
   return searchTextInArray(text,arrayMedios);
 }
-
+*/
 function esEstado(text)
 {
   return searchTextInArray(text,arrayEstados);
@@ -106,8 +179,8 @@ function esEstado(text)
 // esta función es una forma de resolver este problema de buscar un string en un array, pero hay muchas mejores técnicas
 function searchTextInArray(text,array)
 {
-  var totalResult = INVALID;
-  var result = INVALID;
+  let totalResult = INVALID;
+  let result = INVALID;
   for(let i=0;i<array.length;i++)
     {
       result = INVALID;
@@ -121,11 +194,106 @@ function searchTextInArray(text,array)
   return totalResult;
 }
 
-// Estos son los arrays de los cuales buscaré los strings:
+// Antes que nada le tengo que dar una condición inicial a todo este sistemita, así que voy a inicializar la lista con una función que cargue todos los medios de elevación desde un archivo de texto
+function load(file)
+{
+  let file_strings=[];
+  let ME_list = [];
+  //path del archivo
 
-const arrayLineas = ["Línea A", "Línea B","Línea C","Línea D","Línea E","Línea H"];
-const arrayEstaciones =["San Pedrito","Flores","Carabobo","Puán"];
-const arrayMedios = ["Escalera 1", "Escalera 2","Escalera 3"];
-const arrayEstados = ["OK","FALLA","NO SUPERVISADO"];
+  //abro el archivo, lo leo todo en un string y cierro el archivo
+  let fs = require("fs");
+  let text = fs.readFileSync(file, "utf-8");
+  file_strings = text.split("\n");
+  //parseo el string, cargando los valores separados por coma en un objeto ME
+  for (let i=0;i<file_strings.length;i++)
+  {
+    let new_ME = new MedioDeElevación(file_strings[i].split(","));
+    ME_list.push(new_ME);
+  }
+  // hago esto para todos los ME
 
-// Gracias por haber leído todos los comentarios, espero que hayan servido para entender el propósito de este código.
+  // devuelvo una lista con el estado actual (cargada desde un archivo)
+  return ME_list;
+}
+todosLosMedios = load(STATUS_FILE_PATH);
+
+// Primero necesito una función que se llame al abrir la tabla, su misión es leer el JSON (que tiene información nueva) y actualice los valores de la tabla:
+// Al haber una tabla para cada línea de subte, todas las tablas llaman a la misma función:
+
+function onTableOpen ()
+{
+  let PROCESS_STATUS = OK;
+  // Primero leo el JSON
+  let validJSON = readJSON();
+  if (PROCESS_STATUS == ERROR)
+  {
+    alert("El proceso ha sido erróneo y no se actualizó la tabla.");
+  }
+  else if ( PROCESS_STATUS == INCOMPLETE)
+  {
+    alert ("El JSON no tiene todos los ME, se actualizará una porción de la tabla");
+    updateTable(validJSON);
+  }
+  else
+  {
+    updateTable(validJSON);
+    alert("El proceso ha sido exitoso y se actualizó la tabla.");
+  }
+}
+
+// readJSON es llamada, el JSON es leído, luego parseado y corroborado:
+function readJSON()
+{
+  // intentaré una cantidad MaxJsonTries de veces de hacer la lectura de un JSON
+  let tries = 0;
+  while (tries < MaxJsonTries)
+  {
+    let newJSON = getJSONData();
+    let validPortion = checkJSONData(newJSON);
+    if (validPortion.length != newJSON.length)
+    {
+      // Caso de error, tengo que decir que la trama está corrupta y la descarto
+      alert("La lectura del JSON ha devuelto un error y se descartará la trama.");
+    }
+    else
+    {
+      // Caso exitoso, lo devuelvo
+      return newJSON;
+    }
+    ++tries;
+  }
+  // estar en esta parte de la función significa que ya intenté 3 veces y aún no he conseguido un JSON entero válido, así que devuelvo la porción válida.
+  PROCESS_STATUS = INCOMPLETE; 
+  return validPortion;
+}
+
+function getJSONData()
+{
+  // como todavía no vimos JSON acá simplemente voy a cargar otro archivo de texto como si fuera un JSON
+  let newJSON = load("./SpoofJSON.txt");
+  return newJSON;
+}
+
+function updateTable(validJSON)
+{
+  todosLosMedios = Table2List();
+  for (let i =0;i<validJSON.length;i++)
+  {
+    //busco cada medio en la tabla y lo guardo
+    for (let j=0;j<todosLosMedios.length;j++)
+    {
+      
+    }
+
+  }
+}
+
+function Table2List()
+{
+  // Esta es la función que en teoría debe cargar la tabla desde el servidor y ponerla en una lista
+  // por ahora lo soluciono así
+  return load(STATUS_FILE_PATH);
+}
+
+function saveList(todosLosMedios_newState)
