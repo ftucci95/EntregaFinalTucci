@@ -1,0 +1,541 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&display=swap");
+/* Empieza la definición del body, usado por todas las páginas. */
+/* el body, contenedor de todos estos bloques, no debería tener border margin ni padding. */
+.index {
+  margin: 0px;
+  border: 0px solid;
+  padding: 0px; }
+
+/* Empieza la definición del Header */
+/* Implemento flex en el header y en el footer, por lo tanto todas las páginas de mi sitio usarán flex al menos en parte. */
+/* es la barra superior blanca (un div) que contiene al logo de la izquierda y los links a la derecha */
+.header {
+  background-color: white;
+  font-family: "Montserrat", sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  min-height: 70px;
+  max-height: 120px;
+  flex-wrap: wrap;
+  margin: 10px; }
+
+/* definición específica sobre un inline contenido en header, alineado a izquierda */
+.leftSide {
+  margin-left: 2%;
+  margin-right: 4%;
+  display: flex;
+  justify-items: space-between;
+  align-items: center;
+  /* definición específica sobre un inline contenido en el inline de leftside, que tiene el logo */
+  /* definición específica sobre un inline contenido en el inline de leftside, que tiene el el título principal a la derecha del logo */ }
+  .leftSide .headerlogo {
+    flex-basis: auto;
+    padding-right: 0.5%; }
+  .leftSide .headerTitle {
+    padding-left: 10px; }
+
+/* definición específica sobre un inline contenido en header, alineado a derecha */
+.rightSide {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 0.5%;
+  /* definición específica sobre un inline contenido en el inline de rightside, que tiene los links */ }
+  .rightSide .text {
+    text-align: right;
+    padding-right: 38px; }
+
+.myIcon {
+  display: none; }
+
+/* Esta es la parte que no me está funcionando: los colores de los links  */
+a :link {
+  font-weight: bold;
+  color: #C5A000;
+  text-decoration: none; }
+
+a :hover {
+  /* acá debería venir una animación */
+  /* este es el único lugar donde pareció obligatorio meter un !important ... por haberle dicho text-decoration:none en a:link. */
+  text-decoration: underline !important; }
+
+a :visited {
+  color: #dbb91e;
+  text-decoration: underline; }
+
+/* Esta es la parte que ahora sí está funcionando: los colores de los links  */
+.myLink:link {
+  font-weight: bold;
+  color: #C5A000;
+  text-decoration: none; }
+
+.myLink:hover {
+  /* este es el único lugar donde pareció obligatorio meter un !important ... por haberle dicho text-decoration:none en myLink:link. */
+  text-decoration: underline !important; }
+
+.myLink:visited {
+  color: #dbb91e; }
+
+.myLink2:link {
+  color: #000;
+  text-decoration: none; }
+
+.myLink2:hover {
+  /* este es el único lugar donde pareció obligatorio meter un !important ... por haberle dicho text-decoration:none en myLink2:link. */
+  text-decoration: underline !important; }
+
+.myLink2:visited {
+  color: #000;
+  text-decoration: none; }
+
+/* Empieza la definición del Footer */
+/* el footer es (un div) la barra inferior ancha, que contiene links y algunas cosas más */
+.footer {
+  font-family: "Montserrat", sans-serif;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 20px; }
+
+/* dicho footer contiene esencialmente 3 divs apilados, siendo el primero de altura 300px */
+.footerStart {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 80px;
+  margin-right: 80px; }
+
+/* el inicio del footer tiene varios elementos ordenados lateralmente, primero el mismo logo que el header, aunque más grande. */
+.footerLogo {
+  margin-right: 273px;
+  margin-top: 10px; }
+
+/* el inicio del footer tiene además ciertos links apilados, que por ahora llevan a ninguna parte, así que son sólo texto. */
+.navigationLinks {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 10px; }
+  .navigationLinks .title {
+    font-weight: 600;
+    color: #C5A000;
+    margin-bottom: 20px; }
+
+/* justo debajo del inicio del footer hay una línea divisora, con fines estéticos. */
+.divisor {
+  margin-left: 80px;
+  margin-right: 80px;
+  margin-top: 20px; }
+
+/* el final del footer es solamente un div de cierta altura, con fondo blanco */
+.footerEnd {
+  background-color: white;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 80px;
+  margin-right: 80px;
+  margin-top: 20px;
+  /* en la parte izquierda del final del footer hay un copyright falso */
+  /* y del lado derecho una barra de social media */ }
+  .footerEnd .footerLeftSide {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; }
+  .footerEnd .footerRightSide {
+    display: flex;
+    align-content: center;
+    justify-content: flex-end;
+    margin-top: 20px; }
+
+/* dicho social media tiene una descripción "Nuestras redes: " */
+.footerText {
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
+/* y los links a las distintas redes sociales son imágenes representativas de dichas redes sociales */
+.footerImgLink {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px; }
+
+/* Empieza la definición de estilos específicos para index */
+/* Lo primero que aparece en index, debajo del header, es un div que contiene una imagen, que no debería tener bordes */
+.inicio_img {
+  width: 100%;
+  grid-row-start: auto;
+  display: flex; }
+
+.myImage {
+  object-fit: cover;
+  width: 100%; }
+
+/* Acá está el inicio de la explicación que hay en index, siendo un div, debajo de la imagen de las escaleras mecánicas. */
+.inicio_explanation {
+  margin: 0px;
+  border: 0px solid;
+  padding: 0px;
+  background-color: black;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between; }
+
+/* en ese div hay contenido un inline alineado a la izquierda, que es un contenedor de imagen */
+.explanation_left {
+  flex-grow: 4;
+  height: 100%;
+  width: 45%;
+  padding-top: 0%;
+  padding-left: 0%;
+  display: flex;
+  align-items: center; }
+
+/* necesito especificar cosas en esta imagen, como si fuera una clase aparte. */
+.image_format {
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  width: 75%;
+  align-self: auto; }
+
+/* en ese div hay contenido un inline alineado a la izquierda, que contiene texto */
+.explanation_right {
+  display: inline-block;
+  flex-grow: 5;
+  padding-top: 20px;
+  padding-left: 0%;
+  /* en ese bloque de texto, hay un título, que tiene un estilo particular */
+  /* en ese bloque de texto, hay un cuerpo de texto, que tiene otro estilo. */ }
+  .explanation_right #title {
+    font-family: "Montserrat", sans-serif;
+    width: 525px;
+    float: inline-start;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 36px;
+    color: #F6CD19; }
+  .explanation_right #text {
+    font-family: "Montserrat", sans-serif;
+    width: 525px;
+    float: inline-start;
+    padding-top: 35px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 30px;
+    color: #C5A000; }
+
+/* Empieza la definición de estilos específicos para estado_me */
+.firstTitle {
+  grid-row-start: auto;
+  max-height: 150px; }
+
+.firstTitleHeader {
+  margin-left: 80px;
+  margin-right: 80px;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 30px; }
+
+.tableContainer {
+  grid-row-start: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px; }
+
+/* Adición FALOPA */
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px; }
+  .collapsible:after {
+    content: '\002B';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px; }
+  .collapsible:hover {
+    background-color: #555; }
+
+.myLineA {
+  background-color: #07B5D8 !important; }
+
+.myLineB {
+  background-color: #C31D21 !important; }
+
+.myLineC {
+  background-color: #0F6EB0 !important; }
+
+.myLineD {
+  background-color: #01836B !important; }
+
+.myLineE {
+  background-color: #78318D !important; }
+
+.myLineH {
+  background-color: #FED102 !important;
+  color: #000 !important; }
+
+.active:after {
+  content: "\2212"; }
+
+.active:hover {
+  background-color: #555; }
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1; }
+
+th {
+  padding: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: #6c7ae0;
+  text-align: left;
+  font-weight: normal;
+  font-size: 1.1rem;
+  color: white; }
+  th:last-child {
+    border: 0; }
+
+td {
+  padding: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: #808080; }
+
+tr:nth-child(even) td {
+  background: #f8f6ff; }
+
+table {
+  display: grid;
+  min-width: 100%;
+  justify-items: stretch;
+  align-items: center;
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1.67fr) minmax(150px, 1.67fr); }
+
+thead, tbody, tr {
+  display: contents; }
+
+.busqueda_busqueda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+  margin-left: 80px;
+  margin-right: 80px; }
+
+.searchContainer {
+  margin-bottom: 60px; }
+
+.searchBox {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap; }
+
+.searchBoxTitle {
+  margin-bottom: 20px; }
+
+.searchBoxTextbox {
+  width: 200px;
+  display: flex;
+  justify-content: center; }
+
+.searchBoxContainer {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: stretch;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-top: 100px; }
+
+.contact_cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 150px;
+  margin-left: 80px;
+  margin-right: 80px; }
+
+.contact_contact {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-left: 80px;
+  margin-right: 80px;
+  margin-top: 100px;
+  margin-bottom: 300px; }
+
+.contact_text {
+  margin-left: 10px;
+  margin-right: 20px; }
+
+.contact_img {
+  margin-left: 10px; }
+
+@media (max-width: 1000px) {
+  .header {
+    font-family: "Montserrat", sans-serif;
+    font-size: small;
+    display: flex;
+    justify-content: space-between;
+    min-height: 70px;
+    max-height: 80px;
+    flex-wrap: wrap; }
+  .rightSide {
+    display: flex;
+    justify-content: flex-end; }
+    .rightSide .text {
+      text-align: right; }
+  .inicio_explanation .explanation_right {
+    padding-top: 0%;
+    width: 25%; }
+    .inicio_explanation .explanation_right #title {
+      font-size: medium; }
+    .inicio_explanation .explanation_right #text {
+      font-size: small;
+      width: auto;
+      overflow-wrap: break-word;
+      hyphens: manual; }
+  .footer {
+    font-family: "Montserrat", sans-serif;
+    font-size: small;
+    margin-top: 20px; }
+  .footerStartImg {
+    width: 64px;
+    margin-right: 23px; }
+  .footerLogo {
+    margin-right: 10%; }
+  .footerEnd {
+    margin-top: 20px; } }
+
+@media (max-width: 800px) {
+  .header {
+    justify-content: space-between;
+    max-height: 150px; }
+  .rightSide .text {
+    text-align: right; }
+  .leftSide {
+    align-items: stretch;
+    margin-left: 2%;
+    flex-basis: 60px;
+    display: flex;
+    justify-items: space-between;
+    align-items: center; }
+    .leftSide .headerTitle {
+      padding-left: 0px;
+      flex-basis: 0px;
+      display: none; } }
+
+@media (max-width: 600px) {
+  .header {
+    align-items: center;
+    max-height: 250px; }
+  .topnav {
+    display: block !important;
+    min-width: 162px;
+    min-height: 54px; }
+  .firstTitle {
+    min-height: 200px; }
+  .rightSide {
+    display: none; }
+    .rightSide .text {
+      margin-top: 10px; }
+  .myIcon {
+    display: inline-block; }
+  .footerText {
+    display: none; }
+  .footerEnd {
+    flex-wrap: wrap;
+    margin-top: 10px; }
+  .inicio_explanation {
+    margin: 0px;
+    border: 0px solid;
+    padding: 0px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; }
+    .inicio_explanation .explanation_left {
+      width: 100%;
+      margin-left: 10%;
+      margin-right: 10%; }
+    .inicio_explanation .explanation_right {
+      width: 90%; } }
+
+/* Style the navigation menu */
+.topnav {
+  display: none;
+  overflow: hidden;
+  background-color: white;
+  position: relative; }
+
+/* Hide the links inside the navigation menu (except for logo/home) */
+.topnav #myLinks {
+  display: none; }
+
+/* Style navigation menu links */
+.topnav a {
+  color: #C5A000;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 12px;
+  display: block; }
+
+/* Style the hamburger menu */
+.topnav a.icon {
+  background: white;
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0; }
+
+/* Add a grey background color on mouse-over */
+.topnav a:hover {
+  background-color: #dbb91e;
+  color: black; }
+
+/* Style the active link (or home/logo) */
+.active {
+  background-color: #04AA6D;
+  color: #C5A000; }
