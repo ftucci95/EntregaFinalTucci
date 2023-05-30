@@ -10,6 +10,7 @@ for (i = 0; i < coll.length; i++) {
     } else {
       content.style.maxHeight = content.scrollHeight + "px";
       // acá tengo que llamar a la función que se ejecuta cuando abro la tabla
+      onTableOpen ();
     } 
   });
 }

@@ -6,6 +6,7 @@
 * ESTADO: OK, FALLA, NO SUPERVISADO
 */ 
 
+import fs from "fs";
 // esto en C se conoce como #define, dado que JS no tiene esto uso valores const para hacer el código más legible
 const INVALID = 0;
 const VALID = 1;
@@ -33,11 +34,11 @@ class MedioDeElevación{
   // La clase medio de elevación contiene la información por ejemplo de una escalera mecánica cualquiera, dónde está situada, cómo se llama y su estado actual.
   constructor(linea,estacion,escalera,nombre,estado)
   {
-    this.linea=str(linea);
-    this.estacion=str(estacion);
-    this.escalera=str(escalera); //0 para escaleras, 1 para ascensores
-    this.nombre=str(nombre);
-    this.estado=str(estado);
+    this.linea=String(linea);
+    this.estacion=String(estacion);
+    this.escalera=String(escalera); //0 para escaleras, 1 para ascensores
+    this.nombre=String(nombre);
+    this.estado=String(estado);
   }
 
   // función para actualizar el estado del medio de elevación, luego de leer el JSON
@@ -49,14 +50,14 @@ class MedioDeElevación{
   //funcion que devuelve una concatenación de linea, estación, escalera o ascensor(0 o 1), y el nombre
   quienSoy()
   {
-    let aux_string = str(this.linea)+str(this.estacion)+str(this.escalera)+str(this.nombre)
+    let aux_string = String(this.linea)+String(this.estacion)+String(this.escalera)+String(this.nombre)
     return aux_string;
   }
 
   //función para comparar el nombre propio con una cadena externa... útil
   acasoSoy(supposedName)
   {
-    if (str(supposedName) === this.quienSoy())
+    if (String(supposedName) === this.quienSoy())
     {
       return YES;
     }
@@ -202,7 +203,6 @@ function load(file)
   //path del archivo
 
   //abro el archivo, lo leo todo en un string y cierro el archivo
-  let fs = require("fs");
   let text = fs.readFileSync(file, "utf-8");
   file_strings = text.split("\n");
   //parseo el string, cargando los valores separados por coma en un objeto ME
@@ -216,23 +216,27 @@ function load(file)
   // devuelvo una lista con el estado actual (cargada desde un archivo)
   return ME_list;
 }
-todosLosMedios = load(STATUS_FILE_PATH);
 
 // Primero necesito una función que se llame al abrir la tabla, su misión es leer el JSON (que tiene información nueva) y actualice los valores de la tabla:
 // Al haber una tabla para cada línea de subte, todas las tablas llaman a la misma función:
-
 function onTableOpen ()
 {
+  // esto es lo que considero mi función main, cuando se abre la tabla pide un nuevo JSON
+  // esto sería el equivalente a cargar el estado de los medios de elevación desde el servidor:
+  todosLosMedios = load(STATUS_FILE_PATH);
+
   let PROCESS_STATUS = OK;
-  // Primero leo el JSON
+  // Ahora leo el JSON nuevo: está incompleto así que alertará sobre que tiene errores
   let validJSON = readJSON();
   if (PROCESS_STATUS == ERROR)
   {
-    alert("El proceso ha sido erróneo y no se actualizó la tabla.");
+    alert("El proceso ha sido erróneo y no se actualizará la tabla.");
   }
   else if ( PROCESS_STATUS == INCOMPLETE)
   {
+    //tiene que entrar en esta condición
     alert ("El JSON no tiene todos los ME, se actualizará una porción de la tabla");
+    //
     updateTable(validJSON);
   }
   else
@@ -270,22 +274,28 @@ function readJSON()
 
 function getJSONData()
 {
-  // como todavía no vimos JSON acá simplemente voy a cargar otro archivo de texto como si fuera un JSON
+  // como todavía no vimos JSON acá simplemente voy a cargar otro archivo de texto como si fuera un JSON: está incompleto así que va a salir que tiene errores
   let newJSON = load("./SpoofJSON.txt");
   return newJSON;
 }
 
 function updateTable(validJSON)
 {
-  todosLosMedios = Table2List();
+  //todosLosMedios = Table2List();
   for (let i =0;i<validJSON.length;i++)
   {
     //busco cada medio en la tabla y lo guardo
     for (let j=0;j<todosLosMedios.length;j++)
     {
-      
+      if (document.getElementById(Medio2Id(validJSON[i]))!=NULL)
+        {
+          document.getElementById(Medio2Id(validJSON[i])).innerHTML =validJSON[i].estado;
+        }
+      else
+        {
+          alert("Not found... couldn't update table!");
+        }
     }
-
   }
 }
 
@@ -296,4 +306,8 @@ function Table2List()
   return load(STATUS_FILE_PATH);
 }
 
-function saveList(todosLosMedios_newState)
+function Medio2Id(medioDeElevacion)
+{
+  let id = String(medioDeElevacion.linea)+String(medioDeElevacion.estacion)+String(medioDeElevacion.ascensor)+String("-")+String(medioDeElevacion.nombre);
+  return id;
+}
