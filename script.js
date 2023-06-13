@@ -316,7 +316,7 @@ function updateTable(validJSON)
 
     if (document.getElementById(Medio2Id(validJSON[i]))!=null)
       {
-        console.log("I found that is this one: "+ String(Medio2Id(validJSON[i])))
+        console.log("I found that it's this one: "+ String(Medio2Id(validJSON[i])))
         document.getElementById(Medio2Id(validJSON[i])).innerHTML =validJSON[i].estado;
       }
     else
