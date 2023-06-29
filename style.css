@@ -539,3 +539,31 @@ thead, tbody, tr {
 .active {
   background-color: #04AA6D;
   color: #C5A000; }
+
+/* Added styles for JS-project below */
+/* Style for the "last-visited" feature */
+.last-login{
+  max-width: 1140px;
+  width: 80%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.login-date{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  font-style: normal;
+  color: #777;
+  letter-spacing: 1pt;
+  text-align: right;
+  display: block;
+  
+
+}
+
+.pre-login-date{
+  font-style: italic;
+}
